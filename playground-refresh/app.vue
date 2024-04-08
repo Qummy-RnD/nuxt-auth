@@ -12,8 +12,8 @@ const {
   signOut,
   getSession
 } = useAuth()
-const username = ref('hunter')
-const password = ref('hunter2')
+const username = ref('test@qummy.ru')
+const password = ref('ce487648b012')
 </script>
 
 <template>

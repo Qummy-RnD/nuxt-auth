@@ -12,13 +12,14 @@ type UseAuthStateReturn = ReturnType<typeof useLocalAuthState> & {
 export const useAuthState = (): UseAuthStateReturn => {
   const config = useTypedBackendConfig(useRuntimeConfig(), 'refresh')
   const localAuthState = useLocalAuthState()
+
   // Re-construct state from cookie, also setup a cross-component sync via a useState hack, see https://github.com/nuxt/nuxt/issues/13020#issuecomment-1397282717
   const _rawRefreshTokenCookie = useCookie<string | null>(
     config.refreshToken.cookieName,
     {
       default: () => null,
       maxAge: config.refreshToken.maxAgeInSeconds,
-      sameSite: 'lax'
+      sameSite: config.refreshToken.sameSiteAttribute
     }
   )
 
@@ -41,6 +42,11 @@ export const useAuthState = (): UseAuthStateReturn => {
   const schemeSpecificState = {
     refreshToken,
     rawRefreshToken
+  }
+
+  localAuthState.clearToken = () => {
+    localAuthState.setToken(null)
+    rawRefreshToken.value = null
   }
 
   return {

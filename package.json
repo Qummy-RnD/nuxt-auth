@@ -1,15 +1,15 @@
 {
-  "name": "@sidebase/nuxt-auth",
+  "name": "@qummy-rnd/nuxt-auth",
   "version": "0.7.0",
   "license": "MIT",
   "type": "module",
   "exports": {
     ".": {
-      "import": "./dist/module.mjs",
-      "require": "./dist/module.cjs"
+      "import": "./src/module.ts",
+      "require": "./src/module.ts"
     }
   },
-  "main": "./dist/module.cjs",
+  "main": "./src/module.ts",
   "types": "./dist/types.d.ts",
   "files": [
     "dist"
@@ -27,6 +27,7 @@
     "@nuxt/kit": "^3.10.3",
     "defu": "^6.1.4",
     "h3": "^1.11.1",
+    "json-to-formdata-generator": "^1.0.1",
     "knitwork": "^1.0.0",
     "nitropack": "^2.9.1",
     "requrl": "^3.0.2",

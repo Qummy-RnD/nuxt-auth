@@ -36,6 +36,11 @@ interface GlobalMiddlewareOptions {
   addDefaultCallbackUrl?: boolean | string;
 }
 
+/**
+ * Same-site cookie attributes.
+ */
+type SameSiteAttribute = boolean | 'lax' | 'strict' | 'none' | undefined;
+
 type DataObjectPrimitives =
   | 'string'
   | 'number'
@@ -104,6 +109,9 @@ export type ProviderLocal = {
      */
     getSession?: { path?: string; method?: RouterMethod };
   };
+
+  signInWithFormData: boolean;
+
   /**
    * Pages that `nuxt-auth` needs to know the location off for redirects.
    */
@@ -166,7 +174,7 @@ export type ProviderLocal = {
      * @default 'lax'
      * @example 'strict'
      */
-    sameSiteAttribute?: boolean | 'lax' | 'strict' | 'none' | undefined;
+    sameSiteAttribute?: SameSiteAttribute;
   };
   /**
    * Define an interface for the session data object that `nuxt-auth` expects to receive from the `getSession` endpoint.
@@ -198,11 +206,14 @@ export type ProviderLocalRefresh = Omit<ProviderLocal, 'type'> & {
      */
     refresh?: { path?: string; method?: RouterMethod };
   };
+
+  signInWithFormData: boolean;
+
   /**
    *  When refreshOnlyToken is set, only the token will be refreshed
    *
    */
-  refreshOnlyToken?: true;
+  refreshOnlyToken?: boolean;
 
   refreshToken?: {
     /**
@@ -230,6 +241,22 @@ export type ProviderLocalRefresh = Omit<ProviderLocal, 'type'> & {
      * Note: Your backend may reject / expire the token earlier / differently.
      */
     maxAgeInSeconds?: number;
+    /**
+     * The name of the key in the request body used for the refresh token submission.
+     * This field allows specifying under which key the refresh token will be sent in the HTTP request body.
+     * Useful for complying with API expectations that require a specific key name.
+     *
+     * @default 'refreshToken'
+     * @example 'refresh_token'
+     */
+    requestBodyKey?: string;
+    /**
+     * The cookie sameSite policy. See the specification here: https://datatracker.ietf.org/doc/html/draft-ietf-httpbis-rfc6265bis-03#section-4.1.2.7
+     *
+     * @default 'lax'
+     * @example 'strict'
+     */
+    sameSiteAttribute?: SameSiteAttribute
   };
 };
 
@@ -371,6 +398,7 @@ export interface ModuleOptions {
 export type SessionLastRefreshedAt = Date | undefined;
 export type SessionStatus = 'authenticated' | 'unauthenticated' | 'loading';
 type WrappedSessionData<SessionData> = Ref<SessionData | null | undefined>;
+
 export interface CommonUseAuthReturn<SignIn, SignOut, GetSession, SessionData> {
   data: Readonly<WrappedSessionData<SessionData>>;
   lastRefreshedAt: Readonly<Ref<SessionLastRefreshedAt>>;
@@ -460,6 +488,11 @@ export interface ModuleOptionsNormalized extends ModuleOptions {
     pathname: string
     fullBaseUrl: string
   }
+}
+
+export interface SessionCookie {
+  lastRefreshedAt?: SessionLastRefreshedAt
+  data?: SessionDataObject
 }
 
 // Augment types

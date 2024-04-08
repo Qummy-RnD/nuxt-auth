@@ -4,7 +4,7 @@
   "scripts": {
     "typecheck": "tsc --noEmit",
     "lint": "eslint . --max-warnings=0",
-    "dev": "nuxi prepare && nuxi dev",
+    "dev": "nuxi prepare && nuxi dev --port 3050",
     "build": "nuxi build",
     "start": "nuxi preview",
     "generate": "nuxi generate",

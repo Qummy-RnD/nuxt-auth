@@ -2,13 +2,13 @@ import { callWithNuxt } from '#app/nuxt'
 import { joinPathToApiURL } from './url'
 import { useNuxtApp } from '#imports'
 
-export const _fetch = async <T>(
+export const _fetch = async <T> (
   nuxt: ReturnType<typeof useNuxtApp>,
   path: string,
   fetchOptions?: Parameters<typeof $fetch>[1]
 ): Promise<T> => {
-  const joinedPath = await callWithNuxt(nuxt, () => joinPathToApiURL(path))
   try {
+    const joinedPath = await callWithNuxt(nuxt, () => joinPathToApiURL(path))
     return $fetch(joinedPath, fetchOptions)
   } catch (error) {
     // TODO: Adapt this error to be more generic

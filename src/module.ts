@@ -43,6 +43,7 @@ const defaultsByBackend: {
     pages: {
       login: '/login'
     },
+    signInWithFormData: false,
     endpoints: {
       signIn: { path: '/login', method: 'post' },
       signOut: { path: '/logout', method: 'post' },
@@ -66,6 +67,7 @@ const defaultsByBackend: {
       login: '/login'
     },
     refreshOnlyToken: true,
+    signInWithFormData: false,
     endpoints: {
       signIn: { path: '/login', method: 'post' },
       signOut: { path: '/logout', method: 'post' },
@@ -78,13 +80,15 @@ const defaultsByBackend: {
       type: 'Bearer',
       cookieName: 'auth.token',
       headerName: 'Authorization',
-      maxAgeInSeconds: 5 * 60,
+      maxAgeInSeconds: 60 * 60 * 24 * 7, // 7 days
       sameSiteAttribute: 'none' // 5 minutes
     },
     refreshToken: {
       signInResponseRefreshTokenPointer: '/refreshToken',
       cookieName: 'auth.refresh-token',
-      maxAgeInSeconds: 60 * 60 * 24 * 7 // 7 days
+      maxAgeInSeconds: 60 * 60 * 24 * 7, // 7 days
+      requestBodyKey: 'refreshToken',
+      sameSiteAttribute: 'lax'
     },
     sessionDataType: { id: 'string | number' }
   },
@@ -186,7 +190,7 @@ export default defineNuxtModule<ModuleOptions>({
       filename: 'types/auth.d.ts',
       getContents: () =>
         [
-          "declare module '#auth' {",
+          'declare module \'#auth\' {',
           `  const getServerSession: typeof import('${resolve(
             './runtime/server/services'
           )}').getServerSession`,

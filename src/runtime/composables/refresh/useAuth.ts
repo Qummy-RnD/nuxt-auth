@@ -1,4 +1,5 @@
 import type { Ref } from 'vue'
+import { getFormData } from 'json-to-formdata-generator'
 import { callWithNuxt } from '#app'
 import { jsonPointerGet, useTypedBackendConfig } from '../../helpers'
 import { useAuth as useLocalAuth } from '../local/useAuth'
@@ -23,12 +24,18 @@ const signIn: ReturnType<typeof useLocalAuth>['signIn'] = async (
   const { getSession } = useLocalAuth()
   const config = useTypedBackendConfig(useRuntimeConfig(), 'refresh')
   const { path, method } = config.endpoints.signIn
+
+  let body = {
+    ...credentials,
+    ...(signInOptions ?? {})
+  }
+  if (config.signInWithFormData) {
+    body = getFormData(body)
+  }
+
   const response = await _fetch<Record<string, any>>(nuxt, path, {
     method,
-    body: {
-      ...credentials,
-      ...(signInOptions ?? {})
-    },
+    body,
     params: signInParams ?? {}
   })
 
@@ -36,6 +43,7 @@ const signIn: ReturnType<typeof useLocalAuth>['signIn'] = async (
     response,
     config.token.signInResponseTokenPointer
   )
+
   if (typeof extractedToken !== 'string') {
     console.error(
       `Auth: string token expected, received instead: ${JSON.stringify(
